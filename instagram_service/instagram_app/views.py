@@ -15,7 +15,9 @@ from instagram_app.serializers import (
 from instagram_app.services.instagram_client import InstagramAPIError
 from instagram_app.services.sync_service import CommentService, SyncService
 
+
 class SyncView(APIView):
+    """POST /api/sync/ — синхронизация всех постов из Instagram в БД."""
 
     def post(self, request: Request) -> Response:
         try:
@@ -32,13 +34,17 @@ class SyncView(APIView):
             status=status.HTTP_200_OK,
         )
 
+
 class PostListView(generics.ListAPIView):
+    """GET /api/posts/ — список постов из БД с курсорной пагинацией."""
 
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     pagination_class = PostCursorPagination
 
+
 class CommentCreateView(APIView):
+    """POST /api/posts/{id}/comment/ — создание комментария к посту."""
 
     def post(self, request: Request, pk: int) -> Response:
         try:

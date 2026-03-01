@@ -7,12 +7,15 @@ from django.utils.dateparse import parse_datetime
 from instagram_app.models import Comment, Post
 from instagram_app.services.instagram_client import InstagramClient
 
+
 class SyncService:
+    """Сервис синхронизации медиа из Instagram в локальную БД."""
 
     def __init__(self, client: InstagramClient | None = None) -> None:
         self.client = client or InstagramClient()
 
     def sync_posts(self) -> list[Post]:
+        """Загрузить все посты из Instagram и сохранить в БД (upsert-логика)."""
         media_items: list[dict[str, Any]] = self.client.fetch_user_media()
         posts: list[Post] = []
 
@@ -35,12 +38,15 @@ class SyncService:
 
         return posts
 
+
 class CommentService:
+    """Сервис создания комментариев через Instagram API с сохранением в БД."""
 
     def __init__(self, client: InstagramClient | None = None) -> None:
         self.client = client or InstagramClient()
 
     def create_comment(self, post: Post, text: str) -> Comment:
+        """Отправить комментарий в Instagram и сохранить локально."""
         result = self.client.post_comment(post.instagram_id, text)
         comment = Comment.objects.create(
             post=post,
